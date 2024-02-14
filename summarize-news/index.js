@@ -15,13 +15,12 @@ module.exports = df.orchestrator(function* (context) {
   const outputs = [];
 
   const data = yield context.df.callActivity("read-rss");
-  const text = yield context.df.callActivity(
-    "ExtractArticle",
-    data.entry0.link
-  );
-
-  context.log(data);
-  context.log(text);
+  const text = yield context.df.callActivity("ExtractArticle", data);
+  const summary = yield context.df.callActivity("Summarizer", text);
+  for (const article in summary) {
+    context.log(summary[article].title);
+    context.log(summary[article].summary);
+  }
 
   return outputs;
 });

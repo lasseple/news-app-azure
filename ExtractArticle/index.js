@@ -10,27 +10,36 @@
  */
 
 module.exports = async function (context) {
-  const url = context.bindings.name;
+  const data = context.bindings.name;
 
   return new Promise(async (resolve, reject) => {
     try {
-      const { default: fetch } = await import("node-fetch");
+      const articles = [];
+      for (const entry of data) {
+        const { default: fetch } = await import("node-fetch");
+        const response = await fetch(entry.link);
+        if (!response.ok) {
+          throw new Error("Network response was not ok.");
+        }
+        const html = await response.text();
 
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
+        const cheerio = require("cheerio");
+        const $ = cheerio.load(html);
+        const paragraphs = $(".textabsatz")
+          .map((_, el) => $(el).text().trim())
+          .get();
+        const paragraphsString = paragraphs.join(" ");
+
+        const article = {
+          title: entry.title,
+          link: entry.link,
+          pubDate: entry.pubDate,
+          resort: entry.resort,
+          text: paragraphsString,
+        };
+        articles.push(article);
       }
-      const html = await response.text();
-
-      const cheerio = require("cheerio");
-      const $ = cheerio.load(html);
-      const paragraphs = $(".textabsatz")
-        .map((_, el) => $(el).text().trim())
-        .get();
-      const paragraphsString = paragraphs.join(" ");
-
-      //context.log(paragraphsString);
-      resolve(paragraphsString);
+      resolve(articles);
     } catch (error) {
       console.error("Fehler beim Herunterladen der Seite:", error.message);
       reject(error);

@@ -25,24 +25,31 @@ module.exports = async function (context) {
           console.error("Fehler beim Konvertieren von XML in JSON:", err);
           return;
         }
-        var data = {};
+        var data = [];
 
         const currentDate = Date.parse(new Date());
 
         const items = result.rss.channel[0].item;
         items.forEach((item, index) => {
           entryDate = Date.parse(item.pubDate);
-          if (currentDate - entryDate < 7200000)
-            data["entry" + index] = {
+          if (currentDate - entryDate < 7200000) {
+            const entry = {
               title: item.title[0],
               link: item.link[0],
               pubDate: item.pubDate[0],
               resort: JSON.stringify(item.link[0]).split("/")[3],
             };
+
+            data.push(entry);
+            // data["entry" + index] = {
+            //   title: item.title[0],
+            //   link: item.link[0],
+            //   pubDate: item.pubDate[0],
+            //   resort: JSON.stringify(item.link[0]).split("/")[3],
+            // };
+          }
         });
-        //context.log(data);
-        const jsonData = JSON.stringify(data, null, 2);
-        //context.log(jsonData);
+        //const jsonData = JSON.stringify(data);
         resolve(data);
       });
     });
