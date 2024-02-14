@@ -21,6 +21,7 @@ module.exports = df.orchestrator(function* (context) {
     context.log(summary[article].title);
     context.log(summary[article].summary);
   }
+  const persist = yield context.df.callActivity("Persist", summary);
 
   return outputs;
 });
