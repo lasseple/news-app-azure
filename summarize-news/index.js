@@ -12,16 +12,18 @@
 const df = require("durable-functions");
 
 module.exports = df.orchestrator(function* (context) {
-  const outputs = [];
-
-  const data = yield context.df.callActivity("read-rss");
-  const text = yield context.df.callActivity("ExtractArticle", data);
-  const summary = yield context.df.callActivity("Summarizer", text);
-  for (const article in summary) {
-    context.log(summary[article].title);
-    context.log(summary[article].summary);
+  try {
+    const data = yield context.df.callActivity("read-rss");
+    if (data.length > 0) {
+      const text = yield context.df.callActivity("ExtractArticle", data);
+      const summary = yield context.df.callActivity("Summarizer", text);
+      for (const article in summary) {
+        context.log(summary[article].title);
+        context.log(summary[article].summary);
+      }
+      const persist = yield context.df.callActivity("Persist", summary);
+    }
+  } catch (error) {
+    context.log(error);
   }
-  const persist = yield context.df.callActivity("Persist", summary);
-
-  return outputs;
 });

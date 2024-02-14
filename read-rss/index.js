@@ -32,7 +32,7 @@ module.exports = async function (context) {
         const items = result.rss.channel[0].item;
         items.forEach((item, index) => {
           entryDate = Date.parse(item.pubDate);
-          if (currentDate - entryDate < 7200000) {
+          if (currentDate - entryDate < 300000) {
             const entry = {
               title: item.title[0],
               link: item.link[0],
