@@ -90,6 +90,7 @@ module.exports = async function (context) {
               resort: article.resort,
               text: article.text,
               summary: summaryString,
+              imageUrl: article.imageUrl,
             };
             //context.log(summarizedArticle);
             summarizedArticles.push(summarizedArticle);

@@ -35,6 +35,9 @@ const ArticleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imageUrl: {
+    type: String,
+  },
   date: {
     type: Date,
     default: Date.now,
@@ -51,10 +54,10 @@ module.exports = async function (context) {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(`Connected with MongoDB on ${conn.connection.host}`);
+    context.log(`Connected with MongoDB on ${conn.connection.host}`);
   } catch (error) {
-    console.log(`Error: ${error.message}`);
-    console.log(`Error: ${error}`);
+    context.log(`Error: ${error.message}`);
+    context.log(`Error: ${error}`);
   }
   for (const article of context.bindings.name) {
     try {
@@ -65,11 +68,12 @@ module.exports = async function (context) {
         resort: article.resort,
         text: article.text,
         summary: article.summary,
+        imageUrl: article.imageUrl,
       });
       await newArticle.save();
     } catch (error) {
-      console.log(`Error: ${error.message}`);
-      console.log(`Error: ${error}`);
+      context.log(`Error: ${error.message}`);
+      context.log(`Error: ${error}`);
     }
   }
 };

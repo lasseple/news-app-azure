@@ -29,6 +29,8 @@ module.exports = async function (context) {
           .map((_, el) => $(el).text().trim())
           .get();
         const paragraphsString = paragraphs.join(" ");
+        const imageUrl = $(".ts-picture--topbanner > img").attr("src");
+        context.log("Image URL: ", imageUrl);
 
         const article = {
           title: entry.title,
@@ -36,6 +38,7 @@ module.exports = async function (context) {
           pubDate: entry.pubDate,
           resort: entry.resort,
           text: paragraphsString,
+          imageUrl: imageUrl,
         };
         articles.push(article);
       }
