@@ -1,14 +1,4 @@
-﻿/*
- * This function is not intended to be invoked directly. Instead it will be
- * triggered by an orchestrator function.
- *
- * Before running this sample, please:
- * - create a Durable orchestration function
- * - create a Durable HTTP starter function
- * - run 'npm install durable-functions' from the wwwroot folder of your
- *   function app in Kudu
- */
-const mongoose = require("mongoose");
+﻿const mongoose = require("mongoose");
 
 const ArticleSchema = new mongoose.Schema({
   title: {
@@ -47,8 +37,7 @@ const ArticleSchema = new mongoose.Schema({
 const Article = mongoose.model("Article", ArticleSchema);
 
 module.exports = async function (context) {
-  const uri =
-    "mongodb+srv://dhsh:lhR6RFrbzcbgrfvEdNCS@shortent.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000";
+  const uri = process.env["MONGO_URL"];
   try {
     const conn = await mongoose.connect(uri, {
       useNewUrlParser: true,

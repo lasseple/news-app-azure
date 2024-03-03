@@ -1,15 +1,4 @@
-﻿/*
- * This function is not intended to be invoked directly. Instead it will be
- * triggered by an orchestrator function.
- *
- * Before running this sample, please:
- * - create a Durable orchestration function
- * - create a Durable HTTP starter function
- * - run 'npm install durable-functions' from the wwwroot folder of your
- *   function app in Kudu
- */
-
-module.exports = async function (context) {
+﻿module.exports = async function (context) {
   const data = context.bindings.name;
 
   return new Promise(async (resolve, reject) => {
@@ -30,7 +19,6 @@ module.exports = async function (context) {
           .get();
         const paragraphsString = paragraphs.join(" ");
         const imageUrl = $(".ts-picture--topbanner > img").attr("src");
-        context.log("Image URL: ", imageUrl);
 
         const article = {
           title: entry.title,

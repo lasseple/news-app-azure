@@ -1,21 +1,10 @@
-﻿/*
- * This function is not intended to be invoked directly. Instead it will be
- * triggered by an orchestrator function.
- *
- * Before running this sample, please:
- * - create a Durable orchestration function
- * - create a Durable HTTP starter function
- * - run 'npm install durable-functions' from the wwwroot folder of your
- *   function app in Kudu
- */
-const axios = require("axios");
+﻿const axios = require("axios");
 const { parseString } = require("xml2js");
 
 module.exports = async function (context) {
+  const tagesschauUrl = process.env["TAGESSCHAU_RSS_URL"];
   try {
-    const response = await axios.get(
-      "https://www.tagesschau.de/infoservices/alle-meldungen-100~rss2.xml"
-    );
+    const response = await axios.get(tagesschauUrl);
     const xmlData = response.data;
 
     // Konvertiere XML in JSON
@@ -23,7 +12,7 @@ module.exports = async function (context) {
       parseString(xmlData, (err, result) => {
         if (err) {
           console.error("Fehler beim Konvertieren von XML in JSON:", err);
-          return;
+          reject(err);
         }
         var data = [];
 
@@ -41,15 +30,8 @@ module.exports = async function (context) {
             };
 
             data.push(entry);
-            // data["entry" + index] = {
-            //   title: item.title[0],
-            //   link: item.link[0],
-            //   pubDate: item.pubDate[0],
-            //   resort: JSON.stringify(item.link[0]).split("/")[3],
-            // };
           }
         });
-        //const jsonData = JSON.stringify(data);
         resolve(data);
       });
     });

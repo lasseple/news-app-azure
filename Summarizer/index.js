@@ -1,27 +1,16 @@
-﻿/*
- * This function is not intended to be invoked directly. Instead it will be
- * triggered by an orchestrator function.
- *
- * Before running this sample, please:
- * - create a Durable orchestration function
- * - create a Durable HTTP starter function
- * - run 'npm install durable-functions' from the wwwroot folder of your
- *   function app in Kudu
- */
-
-const {
+﻿const {
   AzureKeyCredential,
   TextAnalysisClient,
 } = require("@azure/ai-language-text");
 
 // This example requires environment variables named "LANGUAGE_KEY" and "LANGUAGE_ENDPOINT"
-const endpoint = "https://news-summarization.cognitiveservices.azure.com/";
-const apiKey = "63ee73a8c071497cb180676e6cd6ed03";
+const endpoint = process.env["LANGUAGE_ENDPOINT"];
+const apiKey = process.env["LANGUAGE_KEY"];
 
 module.exports = async function (context) {
   const articles = context.bindings.name;
 
-  context.log("== Extractive Summarization Sample ==");
+  context.log("== Extractive Summarization ==");
 
   const client = new TextAnalysisClient(
     endpoint,
@@ -76,10 +65,6 @@ module.exports = async function (context) {
               const { code, message } = result.error;
               throw new Error(`Unexpected error (${code}): ${message}`);
             }
-            //context.log("Summary: ");
-            //context.log(
-            //  result.sentences.map((sentence) => sentence.text).join("\n")
-            //);
             const summaryString = result.sentences
               .map((sentence) => sentence.text)
               .join(" ");
@@ -92,7 +77,7 @@ module.exports = async function (context) {
               summary: summaryString,
               imageUrl: article.imageUrl,
             };
-            //context.log(summarizedArticle);
+            context.log(summarizedArticle);
             summarizedArticles.push(summarizedArticle);
           }
         }
